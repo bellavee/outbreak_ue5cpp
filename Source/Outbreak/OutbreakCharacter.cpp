@@ -41,6 +41,11 @@ AOutbreakCharacter::AOutbreakCharacter()
 
 }
 
+void AOutbreakCharacter::Die()
+{
+	OnDeath.Broadcast();
+}
+
 void AOutbreakCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -80,6 +85,12 @@ void AOutbreakCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
+void AOutbreakCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	AutoMoveForward();
+}
+
 
 void AOutbreakCharacter::Move(const FInputActionValue& Value)
 {
@@ -104,6 +115,14 @@ void AOutbreakCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void AOutbreakCharacter::AutoMoveForward()
+{
+	if (!bIsDie)
+	{
+		AddMovementInput(GetActorForwardVector(), 1);
 	}
 }
 
