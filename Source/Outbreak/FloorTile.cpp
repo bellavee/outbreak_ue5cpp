@@ -13,11 +13,20 @@ AFloorTile::AFloorTile()
 	Scene = CreateDefaultSubobject<USceneComponent>("Scene");
 	SetRootComponent(Scene);
 
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh");
+	StaticMesh->SetupAttachment(Scene);
+
 	AttachPoint = CreateDefaultSubobject<UArrowComponent>("Attach Point");
 	AttachPoint->SetupAttachment(Scene);
 
 	ExitTrigger = CreateDefaultSubobject<UBoxComponent>("Exit Trigger");
 	ExitTrigger->SetupAttachment(Scene);
+
+	PickupArea = CreateDefaultSubobject<UBoxComponent>("Pickup Area");
+	PickupArea->SetupAttachment(Scene);
+
+	ObstacleArea = CreateDefaultSubobject<UBoxComponent>("Obstacle Area");
+	ObstacleArea->SetupAttachment(Scene);
 
 }
 
@@ -32,6 +41,16 @@ void AFloorTile::BeginPlay()
 	Super::BeginPlay();
 	
 	ExitTrigger->OnComponentBeginOverlap.AddDynamic(this, &AFloorTile::OnOverlapBegin);
+
+	for (int i = 0; i < 6; i++)
+	{
+		SpawnObstacles();
+	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		SpawnPickup();
+	}
 	
 }
 
@@ -56,6 +75,58 @@ void AFloorTile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Oth
 		
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AFloorTile::DestroyActor, 0.5f, false);
+	}
+}
+
+void AFloorTile::SpawnPickup()
+{
+	FVector Location = RandomPointInBoundingBox(PickupArea) + PickupArea->GetRelativeLocation();
+	FRotator Rotation = FRotator::ZeroRotator;
+	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
+	FTransform RelativeTransform = FTransform(Rotation, Location, Scale);
+	
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnParams.bNoFail = true;
+	spawnParams.Owner = this;
+
+	if (PickupSpawnChance < FMath::RandRange(0.0f, 1.0f))
+	{
+		if (PickupClasses.Num() > 0)
+		{
+			int32 RandomIndex = FMath::RandHelper(PickupClasses.Num());
+			
+			APickUp* Pickup = GetWorld()->SpawnActor<APickUp>(PickupClasses[RandomIndex].Get(), RelativeTransform, spawnParams);
+	
+			Pickup->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Pickup"));
+			
+		}
+	}
+}
+
+void AFloorTile::SpawnObstacles()
+{
+	FVector Location = RandomPointInBoundingBox(ObstacleArea) + ObstacleArea->GetRelativeLocation();
+	FRotator Rotation = FRotator::ZeroRotator;
+	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
+	FTransform RelativeTransform = FTransform(Rotation, Location, Scale);
+
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnParams.bNoFail = true;
+	spawnParams.Owner = this;
+
+	
+	if (ObstacleSpawnChance < FMath::RandRange(0.0f, 1.0f))
+	{
+		if (ObstacleClasses.Num() > 0)
+		{
+			int32 RandomIndex = FMath::RandHelper(ObstacleClasses.Num());
+			
+			AObstacle* Obstacle = GetWorld()->SpawnActor<AObstacle>(ObstacleClasses[RandomIndex].Get(), RelativeTransform, spawnParams);
+			Obstacle->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Obstacle"));
+			
+		}
 	}
 }
 

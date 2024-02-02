@@ -65,7 +65,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Status)
 	bool bIsDie;
-
+	
 protected:
 	void Move(const FInputActionValue& Value);
 
