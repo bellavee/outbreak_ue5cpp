@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "FloorTile.h"
 #include "GameFramework/GameModeBase.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 #include "OutbreakGameMode.generated.h"
 
 UCLASS(minimalapi)

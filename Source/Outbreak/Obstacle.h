@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 #include "Obstacle.generated.h"
 
 UCLASS()
@@ -22,7 +22,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category=Components)
 	UBoxComponent* ActionTrigger;
-	
 
 protected:
 	// Called when the game starts or when spawned

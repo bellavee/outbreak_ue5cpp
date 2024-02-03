@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Obstacle.h"
 #include "PickUp.h"
+#include "Zombie.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
@@ -23,6 +24,7 @@ public:
 
 	UFUNCTION()
 	FTransform GetAttachTransform();
+	FTransform GetAttachLocation();
 
 	UPROPERTY(BlueprintAssignable)
 	FFloorTile OnTileExited;
@@ -60,6 +62,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category=Obstacle)
 	float ObstacleSpawnChance;
+
+	UPROPERTY(VisibleAnywhere, Category=Zombie)
+	UBoxComponent* ZombieArea;
+
+	UPROPERTY(EditAnywhere, Category=Zombie)
+	TArray<TSubclassOf<AZombie>> ZombieClasses;
+
+	UPROPERTY(EditAnywhere, Category=Zombie)
+	float ZombieSpawnChance;
+
+	UPROPERTY(BlueprintReadWrite)
+	ANavMeshBoundsVolume* NavMeshBoundsVolume;
 	
 	UFUNCTION()
 	FVector RandomPointInBoundingBox(UBoxComponent* Area);
@@ -70,8 +84,11 @@ protected:
 	UFUNCTION()
 	void SpawnPickup();
 
-	UFUNCTION()
+	UFUNCTION() 
 	void SpawnObstacles();
+	
+	UFUNCTION()
+	void SpawnZombies();
 	
 	UFUNCTION()
 	void DestroyActor();

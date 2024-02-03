@@ -3,6 +3,7 @@
 #include "OutbreakGameMode.h"
 #include "OutbreakCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "NavigationSystem.h"
 #include "UObject/ConstructorHelpers.h"
 
 
@@ -29,14 +30,9 @@ void AOutbreakGameMode::AddFloorTile()
 {
 	if (!TileClass) return;
 	
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParameters.bNoFail = true;
-	SpawnParameters.Owner = this;
-	
-	AFloorTile* Tile = GetWorld()->SpawnActor<AFloorTile>(TileClass.Get(), NextAttachPoint, SpawnParameters);
-	Tile->OnTileExited.AddDynamic(this, &AOutbreakGameMode::AddFloorTile);
-	
+	AFloorTile* Tile = GetWorld()->SpawnActor<AFloorTile>(TileClass.Get(), NextAttachPoint);
+	Tile->OnTileExited.AddDynamic(this, &AOutbreakGameMode::AddFloorTile); 
+    
 	NextAttachPoint = Tile->GetAttachTransform();
 }
 

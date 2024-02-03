@@ -3,8 +3,12 @@
 
 #include "FloorTile.h"
 
+#include "NavigationSystem.h"
 #include "OutbreakCharacter.h"
+#include "Kismet/KismetSystemLibrary.h"
 
+
+class UNavigationSystemV1;
 // Sets default values
 AFloorTile::AFloorTile()
 {
@@ -28,6 +32,9 @@ AFloorTile::AFloorTile()
 	ObstacleArea = CreateDefaultSubobject<UBoxComponent>("Obstacle Area");
 	ObstacleArea->SetupAttachment(Scene);
 
+	ZombieArea = CreateDefaultSubobject<UBoxComponent>("Zombie Area");
+	ZombieArea->SetupAttachment(Scene);
+	
 }
 
 FTransform AFloorTile::GetAttachTransform()
@@ -51,7 +58,17 @@ void AFloorTile::BeginPlay()
 	{
 		SpawnPickup();
 	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		SpawnZombies();
+	}
 	
+	NavMeshBoundsVolume = GetWorld()->SpawnActor<ANavMeshBoundsVolume>(ANavMeshBoundsVolume::StaticClass(), GetAttachTransform());
+	NavMeshBoundsVolume->SetActorScale3D(FVector(50.0f, 50.f, 20.f));
+	NavMeshBoundsVolume->GetRootComponent()->SetMobility(EComponentMobility::Movable);
+	NavMeshBoundsVolume->GetRootComponent()->UpdateBounds();
+
 }
 
 FVector AFloorTile::RandomPointInBoundingBox(UBoxComponent* Area)
@@ -84,11 +101,6 @@ void AFloorTile::SpawnPickup()
 	FRotator Rotation = FRotator::ZeroRotator;
 	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
 	FTransform RelativeTransform = FTransform(Rotation, Location, Scale);
-	
-	FActorSpawnParameters spawnParams;
-	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	spawnParams.bNoFail = true;
-	spawnParams.Owner = this;
 
 	if (PickupSpawnChance < FMath::RandRange(0.0f, 1.0f))
 	{
@@ -96,7 +108,7 @@ void AFloorTile::SpawnPickup()
 		{
 			int32 RandomIndex = FMath::RandHelper(PickupClasses.Num());
 			
-			APickUp* Pickup = GetWorld()->SpawnActor<APickUp>(PickupClasses[RandomIndex].Get(), RelativeTransform, spawnParams);
+			APickUp* Pickup = GetWorld()->SpawnActor<APickUp>(PickupClasses[RandomIndex].Get(), RelativeTransform);
 	
 			Pickup->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Pickup"));
 			
@@ -110,12 +122,6 @@ void AFloorTile::SpawnObstacles()
 	FRotator Rotation = FRotator::ZeroRotator;
 	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
 	FTransform RelativeTransform = FTransform(Rotation, Location, Scale);
-
-	FActorSpawnParameters spawnParams;
-	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	spawnParams.bNoFail = true;
-	spawnParams.Owner = this;
-
 	
 	if (ObstacleSpawnChance < FMath::RandRange(0.0f, 1.0f))
 	{
@@ -123,12 +129,51 @@ void AFloorTile::SpawnObstacles()
 		{
 			int32 RandomIndex = FMath::RandHelper(ObstacleClasses.Num());
 			
-			AObstacle* Obstacle = GetWorld()->SpawnActor<AObstacle>(ObstacleClasses[RandomIndex].Get(), RelativeTransform, spawnParams);
+			AObstacle* Obstacle = GetWorld()->SpawnActor<AObstacle>(ObstacleClasses[RandomIndex].Get(), RelativeTransform);
 			Obstacle->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Obstacle"));
 			
 		}
 	}
 }
+
+void AFloorTile::SpawnZombies()
+{
+	// Define maximum number of attempts to find a non-colliding location
+	const int32 MaxSpawnAttempts = 10;
+	bool bSpawnedSuccessfully = false;
+
+	FVector Location;
+	FTransform RelativeTransform;
+	FRotator Rotation = FRotator::ZeroRotator;
+	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
+	
+	for (int32 Attempt = 0; Attempt < MaxSpawnAttempts && !bSpawnedSuccessfully; ++Attempt)
+	{
+		Location = RandomPointInBoundingBox(ZombieArea) + ZombieArea->GetRelativeLocation();
+		Location.Z = 150.0f;
+		RelativeTransform = FTransform(Rotation, Location, Scale);
+
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    
+		if (ZombieSpawnChance < FMath::RandRange(0.0f, 1.0f))
+		{
+			if (ZombieClasses.Num() > 0)
+			{
+				int32 RandomIndex = FMath::RandHelper(ZombieClasses.Num());
+
+				AZombie* Zombie = GetWorld()->SpawnActor<AZombie>(ZombieClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
+				if (Zombie)
+				{
+					Zombie->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Zombie"));
+					bSpawnedSuccessfully = true; 
+				}
+			}
+		}
+	}
+
+}
+
 
 void AFloorTile::DestroyActor()
 {
@@ -138,8 +183,10 @@ void AFloorTile::DestroyActor()
 	{
 		AttachedActor->Destroy();
 	}
+	NavMeshBoundsVolume->Destroy();
 	Destroy();
 }
+
 
 // Called every frame
 void AFloorTile::Tick(float DeltaTime)
