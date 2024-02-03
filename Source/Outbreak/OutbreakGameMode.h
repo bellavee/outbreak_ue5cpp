@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "FloorTile.h"
 #include "GameFramework/GameModeBase.h"
-#include "NavMesh/NavMeshBoundsVolume.h"
 #include "OutbreakGameMode.generated.h"
+
 
 UCLASS(minimalapi)
 class AOutbreakGameMode : public AGameModeBase
@@ -25,7 +25,7 @@ protected:
 	UFUNCTION()
 	void RestartLevel();
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly)
 	FTransform NextAttachPoint;
 
 	UPROPERTY(VisibleAnywhere)
@@ -33,7 +33,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TAssetSubclassOf<AFloorTile> TileClass;
-	
+
 };
 
 

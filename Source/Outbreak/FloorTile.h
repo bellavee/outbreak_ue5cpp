@@ -22,9 +22,8 @@ public:
 	// Sets default values for this actor's properties
 	AFloorTile();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	FTransform GetAttachTransform();
-	FTransform GetAttachLocation();
 
 	UPROPERTY(BlueprintAssignable)
 	FFloorTile OnTileExited;
@@ -71,9 +70,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category=Zombie)
 	float ZombieSpawnChance;
-
-	UPROPERTY(BlueprintReadWrite)
-	ANavMeshBoundsVolume* NavMeshBoundsVolume;
 	
 	UFUNCTION()
 	FVector RandomPointInBoundingBox(UBoxComponent* Area);

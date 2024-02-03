@@ -3,6 +3,10 @@
 
 #include "Zombie.h"
 
+#include "Blueprint/AIAsyncTaskBlueprintProxy.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AZombie::AZombie()
 {
@@ -22,7 +26,7 @@ void AZombie::BeginPlay()
 void AZombie::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 // Called to bind functionality to input

@@ -122,7 +122,8 @@ void AOutbreakCharacter::AutoMoveForward()
 {
 	if (!bIsDie)
 	{
-		AddMovementInput(GetActorForwardVector(), 1);
+		FVector ConstantForwardDirection = FVector(1, 0, 0);
+		AddMovementInput(ConstantForwardDirection, 1);
 	}
 }
 

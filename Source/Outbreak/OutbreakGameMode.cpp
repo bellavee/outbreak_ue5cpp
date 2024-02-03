@@ -3,13 +3,12 @@
 #include "OutbreakGameMode.h"
 #include "OutbreakCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "NavigationSystem.h"
 #include "UObject/ConstructorHelpers.h"
 
 
 AOutbreakGameMode::AOutbreakGameMode()
 {
-	InitTileNumber = 3;
+	InitTileNumber = 2;
 }
 
 void AOutbreakGameMode::BeginPlay()
@@ -29,14 +28,16 @@ void AOutbreakGameMode::BeginPlay()
 void AOutbreakGameMode::AddFloorTile()
 {
 	if (!TileClass) return;
-	
+
 	AFloorTile* Tile = GetWorld()->SpawnActor<AFloorTile>(TileClass.Get(), NextAttachPoint);
 	Tile->OnTileExited.AddDynamic(this, &AOutbreakGameMode::AddFloorTile); 
     
 	NextAttachPoint = Tile->GetAttachTransform();
+
 }
 
 void AOutbreakGameMode::RestartLevel()
 {
 	GetWorld()->GetFirstPlayerController()->ConsoleCommand("RestartLevel");
 }
+

@@ -3,7 +3,6 @@
 
 #include "FloorTile.h"
 
-#include "NavigationSystem.h"
 #include "OutbreakCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -48,7 +47,7 @@ void AFloorTile::BeginPlay()
 	Super::BeginPlay();
 	
 	ExitTrigger->OnComponentBeginOverlap.AddDynamic(this, &AFloorTile::OnOverlapBegin);
-
+	
 	for (int i = 0; i < 6; i++)
 	{
 		SpawnObstacles();
@@ -59,23 +58,18 @@ void AFloorTile::BeginPlay()
 		SpawnPickup();
 	}
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		SpawnZombies();
 	}
 	
-	NavMeshBoundsVolume = GetWorld()->SpawnActor<ANavMeshBoundsVolume>(ANavMeshBoundsVolume::StaticClass(), GetAttachTransform());
-	NavMeshBoundsVolume->SetActorScale3D(FVector(50.0f, 50.f, 20.f));
-	NavMeshBoundsVolume->GetRootComponent()->SetMobility(EComponentMobility::Movable);
-	NavMeshBoundsVolume->GetRootComponent()->UpdateBounds();
-
 }
 
 FVector AFloorTile::RandomPointInBoundingBox(UBoxComponent* Area)
 {
 	FVector BoxExtend = Area->GetScaledBoxExtent();
 	FVector RandomPosition;
-	
+
 	RandomPosition.X = FMath::RandRange(-BoxExtend.X, BoxExtend.X);
 	RandomPosition.Y = FMath::RandRange(-BoxExtend.Y, BoxExtend.Y);
 	RandomPosition.Z = BoxExtend.Z;
@@ -183,7 +177,6 @@ void AFloorTile::DestroyActor()
 	{
 		AttachedActor->Destroy();
 	}
-	NavMeshBoundsVolume->Destroy();
 	Destroy();
 }
 
