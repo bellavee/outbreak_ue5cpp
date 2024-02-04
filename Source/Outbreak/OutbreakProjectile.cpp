@@ -1,8 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "OutbreakProjectile.h"
+
+#include "Zombie.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+class AZombie;
 
 AOutbreakProjectile::AOutbreakProjectile() 
 {
@@ -33,11 +38,8 @@ AOutbreakProjectile::AOutbreakProjectile()
 
 void AOutbreakProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != nullptr) && (OtherActor != this))
+	if (AZombie* Zombie = Cast<AZombie>(OtherActor))
 	{
-		// OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-	
-		// Destroy();
+		UGameplayStatics::ApplyDamage(OtherActor, BaseDamage, nullptr, this, UDamageType::StaticClass());
 	}
 }

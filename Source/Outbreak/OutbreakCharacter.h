@@ -46,6 +46,12 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UPROPERTY(BlueprintReadOnly, Category=Stats)
+	int TotalZombies;
+
+	UPROPERTY(BlueprintReadOnly, Category=Stats)
+	int Distance;
+
 protected:
 	virtual void BeginPlay();
 
@@ -65,6 +71,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Status)
 	bool bIsDie;
+
+	UFUNCTION()
+	void CountZombie();
+
 	
 protected:
 	void Move(const FInputActionValue& Value);
@@ -72,6 +82,8 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	void AutoMoveForward();
+
+	void CallOnDeath();
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 

@@ -3,15 +3,15 @@
 
 #include "Zombie.h"
 
-#include "Blueprint/AIAsyncTaskBlueprintProxy.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "Kismet/GameplayStatics.h"
+#include "OutbreakCharacter.h"
 
 // Sets default values
 AZombie::AZombie()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 
 }
 
@@ -27,12 +27,5 @@ void AZombie::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-}
-
-// Called to bind functionality to input
-void AZombie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 

@@ -48,12 +48,12 @@ void AFloorTile::BeginPlay()
 	
 	ExitTrigger->OnComponentBeginOverlap.AddDynamic(this, &AFloorTile::OnOverlapBegin);
 	
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		SpawnObstacles();
 	}
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		SpawnPickup();
 	}
@@ -95,6 +95,9 @@ void AFloorTile::SpawnPickup()
 	FRotator Rotation = FRotator::ZeroRotator;
 	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
 	FTransform RelativeTransform = FTransform(Rotation, Location, Scale);
+	
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	if (PickupSpawnChance < FMath::RandRange(0.0f, 1.0f))
 	{
@@ -102,7 +105,7 @@ void AFloorTile::SpawnPickup()
 		{
 			int32 RandomIndex = FMath::RandHelper(PickupClasses.Num());
 			
-			APickUp* Pickup = GetWorld()->SpawnActor<APickUp>(PickupClasses[RandomIndex].Get(), RelativeTransform);
+			APickUp* Pickup = GetWorld()->SpawnActor<APickUp>(PickupClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
 	
 			Pickup->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Pickup"));
 			
@@ -116,6 +119,9 @@ void AFloorTile::SpawnObstacles()
 	FRotator Rotation = FRotator::ZeroRotator;
 	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
 	FTransform RelativeTransform = FTransform(Rotation, Location, Scale);
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 	if (ObstacleSpawnChance < FMath::RandRange(0.0f, 1.0f))
 	{
@@ -123,7 +129,7 @@ void AFloorTile::SpawnObstacles()
 		{
 			int32 RandomIndex = FMath::RandHelper(ObstacleClasses.Num());
 			
-			AObstacle* Obstacle = GetWorld()->SpawnActor<AObstacle>(ObstacleClasses[RandomIndex].Get(), RelativeTransform);
+			AObstacle* Obstacle = GetWorld()->SpawnActor<AObstacle>(ObstacleClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
 			Obstacle->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Obstacle"));
 			
 		}
@@ -132,36 +138,28 @@ void AFloorTile::SpawnObstacles()
 
 void AFloorTile::SpawnZombies()
 {
-	// Define maximum number of attempts to find a non-colliding location
-	const int32 MaxSpawnAttempts = 10;
-	bool bSpawnedSuccessfully = false;
-
 	FVector Location;
 	FTransform RelativeTransform;
 	FRotator Rotation = FRotator::ZeroRotator;
 	FVector Scale = FVector(1.0f, 1.0f, 1.0f);
 	
-	for (int32 Attempt = 0; Attempt < MaxSpawnAttempts && !bSpawnedSuccessfully; ++Attempt)
-	{
-		Location = RandomPointInBoundingBox(ZombieArea) + ZombieArea->GetRelativeLocation();
-		Location.Z = 150.0f;
-		RelativeTransform = FTransform(Rotation, Location, Scale);
+	Location = RandomPointInBoundingBox(ZombieArea) + ZombieArea->GetRelativeLocation();
+	Location.Z = 150.0f;
+	RelativeTransform = FTransform(Rotation, Location, Scale);
 
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     
-		if (ZombieSpawnChance < FMath::RandRange(0.0f, 1.0f))
+	if (ZombieSpawnChance < FMath::RandRange(0.0f, 1.0f))
+	{
+		if (ZombieClasses.Num() > 0)
 		{
-			if (ZombieClasses.Num() > 0)
-			{
-				int32 RandomIndex = FMath::RandHelper(ZombieClasses.Num());
+			int32 RandomIndex = FMath::RandHelper(ZombieClasses.Num());
 
-				AZombie* Zombie = GetWorld()->SpawnActor<AZombie>(ZombieClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
-				if (Zombie)
-				{
-					Zombie->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Zombie"));
-					bSpawnedSuccessfully = true; 
-				}
+			AZombie* Zombie = GetWorld()->SpawnActor<AZombie>(ZombieClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
+			if (Zombie)
+			{
+				Zombie->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Zombie"));
 			}
 		}
 	}

@@ -21,8 +21,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Health)
 	float DefaultHealth;
 
-	UPROPERTY(BlueprintReadOnly, Category=Health);
+	UPROPERTY(BlueprintReadWrite, Category=Health);
 	float Health;
+
+	UFUNCTION(BlueprintCallable)
+	float AddHealth(float Value);
 
 	UFUNCTION()
 	void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);

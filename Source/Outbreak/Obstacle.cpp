@@ -14,14 +14,14 @@ AObstacle::AObstacle()
 
 	ActionTrigger = CreateDefaultSubobject<UBoxComponent>("Action Trigger");
 	ActionTrigger->SetupAttachment(Scene);
-	ActionTrigger->OnComponentBeginOverlap.AddDynamic(this, &AObstacle::OnGet);
-
 }
 
 // Called when the game starts or when spawned
 void AObstacle::BeginPlay()
 {
 	Super::BeginPlay();
+	ActionTrigger->OnComponentBeginOverlap.AddDynamic(this, &AObstacle::OnGet);
+	ActionTrigger->OnComponentEndOverlap.AddDynamic(this, &AObstacle::OnOut);
 }
 
 // Called every frame

@@ -18,6 +18,24 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class AOutbreakProjectile> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
+	int DefaultAmmoAmount;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
+	int AmmoAmount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
+	bool bIsLimitAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
+	bool bIsRifle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
+	bool bIsPistol;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
+	bool bIsShotgun;
+	
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* FireSound;
@@ -45,16 +63,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void AttachWeapon(AOutbreakCharacter* TargetCharacter);
 
-	/** Make the weapon Fire a Projectile */
-	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void SpawnProjectile();
+	
+	void FireRifle();
+
+	void FirePistol();
+
+	void FireShotgun();
+	
 	void Fire();
 
+
 protected:
-	/** Ends gameplay for this component. */
+	virtual void BeginPlay() override;
+	
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	/** The Character holding this weapon*/
 	AOutbreakCharacter* Character;
+
 };

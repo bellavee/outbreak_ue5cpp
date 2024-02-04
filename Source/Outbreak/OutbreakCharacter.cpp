@@ -43,7 +43,14 @@ AOutbreakCharacter::AOutbreakCharacter()
 
 void AOutbreakCharacter::Die()
 {
-	OnDeath.Broadcast();
+	if (!bIsDie)
+	{
+		GetMesh()->SetVisibility(false);
+		bIsDie = true;
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AOutbreakCharacter::CallOnDeath, 3.0f, false);
+	}
 }
 
 void AOutbreakCharacter::BeginPlay()
@@ -85,6 +92,11 @@ void AOutbreakCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
+void AOutbreakCharacter::CountZombie()
+{
+	TotalZombies++;
+}
+
 void AOutbreakCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -94,12 +106,10 @@ void AOutbreakCharacter::Tick(float DeltaTime)
 
 void AOutbreakCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	if (!bIsDie && Controller != nullptr)
 	{
-		// add movement 
 		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 		AddMovementInput(GetActorRightVector(), MovementVector.X);
 	}
@@ -107,12 +117,10 @@ void AOutbreakCharacter::Move(const FInputActionValue& Value)
 
 void AOutbreakCharacter::Look(const FInputActionValue& Value)
 {
-	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
-		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
@@ -125,6 +133,11 @@ void AOutbreakCharacter::AutoMoveForward()
 		FVector ConstantForwardDirection = FVector(1, 0, 0);
 		AddMovementInput(ConstantForwardDirection, 1);
 	}
+}
+
+void AOutbreakCharacter::CallOnDeath()
+{
+	OnDeath.Broadcast();
 }
 
 void AOutbreakCharacter::SetHasRifle(bool bNewHasRifle)
