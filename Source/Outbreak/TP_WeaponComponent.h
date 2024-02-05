@@ -29,9 +29,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
 	bool bIsRifle;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
-	bool bIsPistol;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Projectile)
 	bool bIsShotgun;
@@ -66,8 +63,6 @@ public:
 	void SpawnProjectile();
 	
 	void FireRifle();
-
-	void FirePistol();
 
 	void FireShotgun();
 	

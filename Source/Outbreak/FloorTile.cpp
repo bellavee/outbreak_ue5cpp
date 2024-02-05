@@ -48,17 +48,17 @@ void AFloorTile::BeginPlay()
 	
 	ExitTrigger->OnComponentBeginOverlap.AddDynamic(this, &AFloorTile::OnOverlapBegin);
 	
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		SpawnObstacles();
 	}
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 15; i++)
 	{
 		SpawnPickup();
 	}
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		SpawnZombies();
 	}
@@ -99,17 +99,14 @@ void AFloorTile::SpawnPickup()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	if (PickupSpawnChance < FMath::RandRange(0.0f, 1.0f))
+	if (PickupClasses.Num() > 0)
 	{
-		if (PickupClasses.Num() > 0)
-		{
-			int32 RandomIndex = FMath::RandHelper(PickupClasses.Num());
+		int32 RandomIndex = FMath::RandHelper(PickupClasses.Num());
 			
-			APickUp* Pickup = GetWorld()->SpawnActor<APickUp>(PickupClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
+		APickUp* Pickup = GetWorld()->SpawnActor<APickUp>(PickupClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
 	
-			Pickup->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Pickup"));
+		Pickup->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Pickup"));
 			
-		}
 	}
 }
 
@@ -123,16 +120,13 @@ void AFloorTile::SpawnObstacles()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
-	if (ObstacleSpawnChance < FMath::RandRange(0.0f, 1.0f))
+	if (ObstacleClasses.Num() > 0)
 	{
-		if (ObstacleClasses.Num() > 0)
-		{
-			int32 RandomIndex = FMath::RandHelper(ObstacleClasses.Num());
+		int32 RandomIndex = FMath::RandHelper(ObstacleClasses.Num());
 			
-			AObstacle* Obstacle = GetWorld()->SpawnActor<AObstacle>(ObstacleClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
-			Obstacle->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Obstacle"));
+		AObstacle* Obstacle = GetWorld()->SpawnActor<AObstacle>(ObstacleClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
+		Obstacle->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Obstacle"));
 			
-		}
 	}
 }
 
@@ -150,17 +144,14 @@ void AFloorTile::SpawnZombies()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     
-	if (ZombieSpawnChance < FMath::RandRange(0.0f, 1.0f))
+	if (ZombieClasses.Num() > 0)
 	{
-		if (ZombieClasses.Num() > 0)
-		{
-			int32 RandomIndex = FMath::RandHelper(ZombieClasses.Num());
+		int32 RandomIndex = FMath::RandHelper(ZombieClasses.Num());
 
-			AZombie* Zombie = GetWorld()->SpawnActor<AZombie>(ZombieClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
-			if (Zombie)
-			{
-				Zombie->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Zombie"));
-			}
+		AZombie* Zombie = GetWorld()->SpawnActor<AZombie>(ZombieClasses[RandomIndex].Get(), RelativeTransform, SpawnParameters);
+		if (Zombie)
+		{
+			Zombie->AttachToComponent(Scene, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Zombie"));
 		}
 	}
 

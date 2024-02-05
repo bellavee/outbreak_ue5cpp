@@ -49,8 +49,18 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category=Stats)
 	int TotalZombies;
 
-	UPROPERTY(BlueprintReadOnly, Category=Stats)
-	int Distance;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stats)
+	bool bIsDie;
+
+	UFUNCTION()
+	void CountZombie();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stats)
+	int32 TotalDistance = 0;
+
+	FVector StartPosition;
+
+	void UpdateDistance();
 
 protected:
 	virtual void BeginPlay();
@@ -68,12 +78,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Status)
-	bool bIsDie;
-
-	UFUNCTION()
-	void CountZombie();
 
 	
 protected:

@@ -50,26 +50,20 @@ protected:
 	UPROPERTY(EditAnywhere, Category=Pickup)
 	TArray<TSubclassOf<APickUp>> PickupClasses;
 	
-	UPROPERTY(EditAnywhere, Category=Pickup)
-	float PickupSpawnChance;
 
 	UPROPERTY(VisibleAnywhere, Category=Obstacle)
 	UBoxComponent* ObstacleArea;
 
 	UPROPERTY(EditAnywhere, Category=Obstacle)
 	TArray<TSubclassOf<AObstacle>> ObstacleClasses;
-
-	UPROPERTY(EditAnywhere, Category=Obstacle)
-	float ObstacleSpawnChance;
+	
 
 	UPROPERTY(VisibleAnywhere, Category=Zombie)
 	UBoxComponent* ZombieArea;
 
 	UPROPERTY(EditAnywhere, Category=Zombie)
 	TArray<TSubclassOf<AZombie>> ZombieClasses;
-
-	UPROPERTY(EditAnywhere, Category=Zombie)
-	float ZombieSpawnChance;
+	
 	
 	UFUNCTION()
 	FVector RandomPointInBoundingBox(UBoxComponent* Area);

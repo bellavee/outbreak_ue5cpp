@@ -55,10 +55,8 @@ void AOutbreakCharacter::Die()
 
 void AOutbreakCharacter::BeginPlay()
 {
-	// Call the base class  
 	Super::BeginPlay();
 
-	// Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -67,6 +65,7 @@ void AOutbreakCharacter::BeginPlay()
 		}
 	}
 
+	StartPosition = GetActorLocation();
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -101,8 +100,19 @@ void AOutbreakCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AutoMoveForward();
+	UpdateDistance();
 }
 
+
+void AOutbreakCharacter::UpdateDistance()
+{
+	if (!bIsDie)
+	{
+		FVector CurrentPosition = GetActorLocation();
+		float DistanceFloat = (CurrentPosition - StartPosition).Size();
+		TotalDistance = FMath::RoundToInt(DistanceFloat);
+	}
+}
 
 void AOutbreakCharacter::Move(const FInputActionValue& Value)
 {
@@ -119,7 +129,7 @@ void AOutbreakCharacter::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	if (!bIsDie && Controller != nullptr)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);

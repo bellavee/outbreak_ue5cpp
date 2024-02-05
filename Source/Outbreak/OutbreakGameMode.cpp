@@ -38,6 +38,6 @@ void AOutbreakGameMode::AddFloorTile()
 
 void AOutbreakGameMode::RestartLevel()
 {
-	GetWorld()->GetFirstPlayerController()->ConsoleCommand("RestartLevel");
+	UGameplayStatics::OpenLevel(GetWorld(), "GameOver");
 }
 

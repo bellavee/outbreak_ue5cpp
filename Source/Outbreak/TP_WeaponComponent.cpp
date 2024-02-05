@@ -24,7 +24,7 @@ void UTP_WeaponComponent::BeginPlay()
 
 void UTP_WeaponComponent::SpawnProjectile()
 {
-	if (ProjectileClass != nullptr && (!bIsLimitAmmo || AmmoAmount > 0) )
+	if (!Character->bIsDie && ProjectileClass != nullptr && (!bIsLimitAmmo || AmmoAmount > 0) )
 	{
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
@@ -34,7 +34,7 @@ void UTP_WeaponComponent::SpawnProjectile()
 			const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 	
 			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
 			World->SpawnActor<AOutbreakProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		}
@@ -63,15 +63,6 @@ void UTP_WeaponComponent::FireRifle()
 		AmmoAmount -= 1;
 }
 
-
-void UTP_WeaponComponent::FirePistol()
-{
-	SpawnProjectile();
-	if (AmmoAmount > 0)
-		AmmoAmount -= 1;
-}
-
-
 void UTP_WeaponComponent::FireShotgun()
 {
 	SpawnProjectile();
@@ -88,7 +79,6 @@ void UTP_WeaponComponent::Fire()
 	}
 
 	if (bIsRifle) FireRifle();
-	if (bIsPistol) FirePistol();
 	if (bIsShotgun) FireShotgun();
 	
 }
