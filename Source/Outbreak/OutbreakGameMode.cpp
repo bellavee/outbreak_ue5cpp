@@ -8,7 +8,7 @@
 
 AOutbreakGameMode::AOutbreakGameMode()
 {
-	InitTileNumber = 2;
+	InitTileNumber = 2;	
 }
 
 void AOutbreakGameMode::BeginPlay()

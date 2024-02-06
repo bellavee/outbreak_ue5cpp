@@ -32,7 +32,7 @@ protected:
 	int32 InitTileNumber;
 
 	UPROPERTY(EditAnywhere)
-	TAssetSubclassOf<AFloorTile> TileClass;
+	TSubclassOf<AFloorTile> TileClass;
 
 };
 
